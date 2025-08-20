@@ -1,0 +1,721 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Task Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #adb5bd;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            font-size: 1.1rem;
+        }
+        
+        .task-manager {
+            display: flex;
+            gap: 25px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .controls {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .search-group {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: var(--transition);
+            outline: none;
+        }
+        
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        input[type="text"]:focus {
+            border-color: white;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        select {
+            padding: 14px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            outline: none;
+        }
+        
+        select:focus {
+            border-color: white;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        select option {
+            background-color: white;
+            color: #333;
+        }
+        
+        button {
+            padding: 14px 20px;
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .add-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .search-btn {
+            background-color: var(--gray);
+            color: white;
+        }
+        
+        .search-btn:hover {
+            background-color: #888;
+        }
+        
+        .clear-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .clear-btn:hover {
+            background-color: #d43653;
+        }
+        
+        .column {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .column:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .column-header {
+            padding: 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+            position: relative;
+            text-align: center;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .to-do .column-header {
+            background: linear-gradient(135deg, #f9c800 0%, #f89b29 100%);
+        }
+        
+        .in-progress .column-header {
+            background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+        }
+        
+        .done .column-header {
+            background: linear-gradient(135deg, #06d6a0 0%, #05b887 100%);
+        }
+        
+        .tasks-list {
+            padding: 15px;
+            min-height: 400px;
+            list-style-type: none;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .tasks-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .tasks-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .tasks-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .tasks-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .task-item {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            cursor: grab;
+            transition: var(--transition);
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        
+        .task-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .task-item.high-priority::before {
+            background-color: var(--danger);
+        }
+        
+        .task-item.medium-priority::before {
+            background-color: var(--warning);
+        }
+        
+        .task-item.low-priority::before {
+            background-color: var(--success);
+        }
+        
+        .task-item .drag-handle {
+            color: var(--gray);
+            cursor: grab;
+            padding: 4px;
+            font-size: 18px;
+        }
+        
+        .task-item .drag-handle:hover {
+            color: var(--dark);
+        }
+        
+        .task-item .task-content {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .task-item .priority-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .task-item.high-priority .priority-badge {
+            background-color: var(--danger);
+        }
+        
+        .task-item.medium-priority .priority-badge {
+            background-color: var(--warning);
+            color: #333;
+        }
+        
+        .task-item.low-priority .priority-badge {
+            background-color: var(--success);
+        }
+        
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-color: #dee2e6;
+        }
+        
+        .task-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.02) rotate(2deg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-style: italic;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .empty-state p {
+            color: #aaa;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 992px) {
+            .task-manager {
+                flex-direction: column;
+            }
+            
+            .column {
+                min-width: auto;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .input-group, .search-group {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .controls {
+                padding: 15px;
+            }
+            
+            .input-group, .search-group {
+                gap: 10px;
+            }
+            
+            button {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            
+            input[type="text"], select {
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tasks"></i> Interactive Task Manager</h1>
+            <p class="subtitle">Create and Organize your plans</p>
+        </header>
+        
+        <div class="task-manager">
+            <div class="controls">
+                <div class="input-group">
+                    <input type="text" id="new-task-input" placeholder="Enter a new task...">
+                    <select id="priority-select" class="priority-dropdown">
+                        <option value="low">Low Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="high">High Priority</option>
+                    </select>
+                    <button id="add-task-btn" class="add-btn">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+
+
+                <div class="search-group">
+                    <input type="text" id="search-input" placeholder="Search tasks...">
+                    <button id="search-btn" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button id="clear-btn" class="clear-btn">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+            </div>
+            
+            <div class="column to-do">
+                <div class="column-header">
+                    <i class="fas fa-clipboard-list"></i> To Do
+                </div>
+                <ul id="to-do-list" class="tasks-list">
+                    <li class="task-item low-priority" draggable="true">
+                        <i class="fas fa-grip-vertical drag-handle"></i>
+                        <span class="task-content">Review code changes</span>
+                        <span class="priority-badge">Low</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="column in-progress">
+                <div class="column-header">
+                    <i class="fas fa-cogs"></i> In Progress
+                </div>
+                <ul id="in-progress-list" class="tasks-list">
+                    <li class="task-item high-priority" draggable="true">
+                        <i class="fas fa-grip-vertical drag-handle"></i>
+                        <span class="task-content">Update documentation</span>
+                        <span class="priority-badge">High</span>
+                    </li>
+                    <li class="task-item medium-priority" draggable="true">
+                        <i class="fas fa-grip-vertical drag-handle"></i>
+                        <span class="task-content">Complete project proposal</span>
+                        <span class="priority-badge">Medium</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="column done">
+                <div class="column-header">
+                    <i class="fas fa-check-circle"></i> Done
+                </div>
+                <ul id="done-list" class="tasks-list">
+                    <li class="task-item high-priority" draggable="true">
+                        <i class="fas fa-grip-vertical drag-handle"></i>
+                        <span class="task-content">Fix critical bug</span>
+                        <span class="priority-badge">High</span>
+                    </li>
+                    <li class="task-item low-priority" draggable="true">
+                        <i class="fas fa-grip-vertical drag-handle"></i>
+                        <span class="task-content">Organize team meeting</span>
+                        <span class="priority-badge">Low</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const newTaskInput = document.getElementById('new-task-input');
+        const prioritySelect = document.getElementById('priority-select');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        
+        const toDoList = document.getElementById('to-do-list');
+        const inProgressList = document.getElementById('in-progress-list');
+        const doneList = document.getElementById('done-list');
+        
+        let draggedItem = null;
+        
+        function setupDragEvents() {
+            const taskItems = document.querySelectorAll('.task-item');
+            
+            taskItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+            
+            [toDoList, inProgressList, doneList].forEach(list => {
+                list.addEventListener('dragover', handleDragOver);
+                list.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        function handleDragStart(e) {
+            draggedItem = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            
+            if (draggedItem && this !== draggedItem) {
+                if (this.tagName === 'UL') {
+                    this.appendChild(draggedItem);
+                } else if (this.tagName === 'LI') {
+                    const parentList = this.parentNode;
+                    parentList.insertBefore(draggedItem, this);
+                }
+                
+                updateTaskPriority(draggedItem);
+            }
+        }
+        
+        function updateTaskPriority(taskItem) {
+            const parentColumn = taskItem.closest('.column');
+            const columnClass = parentColumn.classList[1];
+            
+            taskItem.classList.remove('high-priority', 'medium-priority', 'low-priority');
+            
+            const badge = taskItem.querySelector('.priority-badge');
+            
+            if (columnClass === 'to-do') {
+                taskItem.classList.add('low-priority');
+                badge.textContent = 'Low';
+                badge.style.backgroundColor = '#06d6a0';
+            } else if (columnClass === 'in-progress') {
+                taskItem.classList.add('medium-priority');
+                badge.textContent = 'Medium';
+                badge.style.backgroundColor = '#ffd166';
+                badge.style.color = '#333';
+            } else if (columnClass === 'done') {
+                taskItem.classList.add('high-priority');
+                badge.textContent = 'High';
+                badge.style.backgroundColor = '#ef476f';
+            }
+        }
+        
+        function addTask() {
+            const taskText = newTaskInput.value.trim();
+            if (!taskText) return;
+            
+            const priority = prioritySelect.value;
+            
+            const taskItem = document.createElement('li');
+            taskItem.className = `task-item ${priority}-priority`;
+            taskItem.draggable = true;
+            
+            const dragHandle = document.createElement('i');
+            dragHandle.className = 'fas fa-grip-vertical drag-handle';
+            
+            const taskContent = document.createElement('span');
+            taskContent.className = 'task-content';
+            taskContent.textContent = taskText;
+            
+            const priorityBadge = document.createElement('span');
+            priorityBadge.className = 'priority-badge';
+            
+            priorityBadge.textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
+            if (priority === 'high') {
+                priorityBadge.style.backgroundColor = '#ef476f';
+            } else if (priority === 'medium') {
+                priorityBadge.style.backgroundColor = '#ffd166';
+                priorityBadge.style.color = '#333';
+            } else {
+                priorityBadge.style.backgroundColor = '#06d6a0';
+            }
+            
+            taskItem.appendChild(dragHandle);
+            taskItem.appendChild(taskContent);
+            taskItem.appendChild(priorityBadge);
+            
+            toDoList.appendChild(taskItem);
+            
+            newTaskInput.value = '';
+            prioritySelect.value = 'low';
+            
+            setupDragEvents();
+            
+            removeEmptyState();
+        }
+        
+        function searchTasks() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                document.querySelectorAll('.task-item').forEach(item => {
+                    item.style.display = 'flex';
+                });
+                return;
+            }
+            
+            document.querySelectorAll('.task-item').forEach(item => {
+                const taskText = item.querySelector('.task-content').textContent.toLowerCase();
+                if (taskText.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function clearSearch() {
+            searchInput.value = '';
+            document.querySelectorAll('.task-item').forEach(item => {
+                item.style.display = 'flex';
+            });
+        }
+        
+        function clearAllTasks() {
+            if (confirm('Are you sure you want to delete all tasks?')) {
+                toDoList.innerHTML = '';
+                inProgressList.innerHTML = '';
+                doneList.innerHTML = '';
+                
+                addEmptyState();
+            }
+        }
+        
+        function addEmptyState() {
+            const columns = [
+                { list: toDoList, message: 'No tasks to do' },
+                { list: inProgressList, message: 'No tasks in progress' },
+                { list: doneList, message: 'No completed tasks' }
+            ];
+            
+            columns.forEach(column => {
+                if (column.list.children.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    
+                    const icon = document.createElement('i');
+                    icon.className = column.list.id === 'to-do-list' ? 'fas fa-clipboard' : 
+                                  column.list.id === 'in-progress-list' ? 'fas fa-spinner' : 'fas fa-check';
+                    
+                    const text = document.createElement('p');
+                    text.textContent = column.message;
+                    
+                    emptyState.appendChild(icon);
+                    emptyState.appendChild(text);
+                    column.list.appendChild(emptyState);
+                }
+            });
+        }
+        
+        function removeEmptyState() {
+            document.querySelectorAll('.empty-state').forEach(el => {
+                el.remove();
+            });
+        }
+        
+        addTaskBtn.addEventListener('click', addTask);
+        newTaskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+        
+        searchBtn.addEventListener('click', searchTasks);
+        searchInput.addEventListener('input', searchTasks);
+        
+        clearBtn.addEventListener('click', clearAllTasks);
+        
+        setupDragEvents();
+        addEmptyState();
+    </script>
+</body>
+</html>
